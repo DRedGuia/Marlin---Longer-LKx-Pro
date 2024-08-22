@@ -86,6 +86,12 @@
 // Show the Marlin bootscreen on startup. ** ENABLE FOR PRODUCTION **
 #define SHOW_BOOTSCREEN
 
+
+//Fan Control 
+#define Z_MAX_PIN -1
+#define MOSFET_D_PIN 37
+#define FAN1_PIN MOSFET_D_PIN
+
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
 //#define SHOW_CUSTOM_BOOTSCREEN
 
@@ -93,10 +99,10 @@
 //#define CUSTOM_STATUS_SCREEN_IMAGE
 
 // @section machine
-#define LGT_MAC //  For Alphawise and Longer U30 pro, LK4/LK5 pro
-#define LK4_Pro //  for LK4pro, U30 Pro
+#define LGT_MAC //  For Alphawise and Longer U30 pro LK4 pro
+#define LK4_Pro //  for LK4pro
 //#define LK5_Pro //  for LK5pro
-#define LKPro_BLTOUCH // for LK4Pro and LK5Pro
+
 
 #define LKPro_FW_VERSION "GC 1.2"
 #define LCD_HEIGHT 4 // number of message lines in the wait screen
@@ -194,7 +200,7 @@
 //#define U_DRIVER_TYPE  A4988
 //#define V_DRIVER_TYPE  A4988
 //#define W_DRIVER_TYPE  A4988
-#define E0_DRIVER_TYPE A4988
+#define E0_DRIVER_TYPE TMC2209_STANDALONE
 //#define E1_DRIVER_TYPE A4988
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
@@ -622,15 +628,15 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 275
-#define HEATER_1_MAXTEMP 275
-#define HEATER_2_MAXTEMP 275
-#define HEATER_3_MAXTEMP 275
-#define HEATER_4_MAXTEMP 275
-#define HEATER_5_MAXTEMP 275
-#define HEATER_6_MAXTEMP 275
-#define HEATER_7_MAXTEMP 275
-#define BED_MAXTEMP 110
+#define HEATER_0_MAXTEMP 310
+#define HEATER_1_MAXTEMP 310
+#define HEATER_2_MAXTEMP 310
+#define HEATER_3_MAXTEMP 310
+#define HEATER_4_MAXTEMP 310
+#define HEATER_5_MAXTEMP 310
+#define HEATER_6_MAXTEMP 310
+#define HEATER_7_MAXTEMP 310
+#define BED_MAXTEMP 130
 #define CHAMBER_MAXTEMP 60
 
 /**
@@ -667,9 +673,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp 31.08
-    #define DEFAULT_Ki 2.71
-    #define DEFAULT_Kd 89.10
+    #define DEFAULT_Kp 18.85
+    #define DEFAULT_Ki 1.17
+    #define DEFAULT_Kd 75.68
   #endif
 #endif
 
@@ -827,14 +833,14 @@
  * *** IT IS HIGHLY RECOMMENDED TO LEAVE THIS OPTION ENABLED! ***
  */
 #define PREVENT_COLD_EXTRUSION
-#define EXTRUDE_MINTEMP 180
+#define EXTRUDE_MINTEMP 70
 
 /**
  * Prevent a single extrusion longer than EXTRUDE_MAXLENGTH.
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 500
+#define EXTRUDE_MAXLENGTH 1500
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -1041,7 +1047,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 96 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 444.5 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
@@ -1498,11 +1504,11 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR true //  For Alphawise and Longer U30 pro LK4 pro
+#define INVERT_E0_DIR false //  For Alphawise and Longer U30 pro LK4 pro
 #ifdef LK1_Pro
 #define INVERT_E0_DIR false
 #else
-#define INVERT_E0_DIR true
+#define INVERT_E0_DIR false
 #endif
 
 #define INVERT_E1_DIR false
@@ -1549,8 +1555,8 @@
   #define X_BED_SIZE 300 // for LK1 pro
   #define Y_BED_SIZE 300 // for LK1 pro
 #else                  // LK4 Pro
-  #define X_BED_SIZE 220 //  For Alphawise and Longer U30 pro LK4 pro
-  #define Y_BED_SIZE 220 //  For Alphawise and Longer U30 pro LK4 pro
+  #define X_BED_SIZE 235 //  For Alphawise and Longer U30 pro LK4 pro
+  #define Y_BED_SIZE 235 //  For Alphawise and Longer U30 pro LK4 pro
 #endif
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
@@ -2175,7 +2181,7 @@
   //#define NOZZLE_CLEAN_NO_Y
 
   // Require a minimum hotend temperature for cleaning
-  #define NOZZLE_CLEAN_MIN_TEMP 170
+  #define NOZZLE_CLEAN_MIN_TEMP 180
   //#define NOZZLE_CLEAN_HEATUP       // Heat up the nozzle instead of skipping wipe
 
   // Explicit wipe G-code script applies to a G12 with no arguments.
@@ -3097,41 +3103,44 @@
  *
  * LED Type. Enable only one of the following two options.
  */
- //#define RGB_LED
- //#define RGBW_LED
+//#define RGB_LED
+//#define RGBW_LED
 
 #if EITHER(RGB_LED, RGBW_LED)
-#define RGB_LED_R_PIN 4     // LGT KIT V1.0 J21 connector
-#define RGB_LED_G_PIN 5     // LGT KIT V1.0 J21 connector
-#define RGB_LED_B_PIN 6     // LGT KIT V1.0 J21 connector
-//#define RGB_LED_W_PIN -1
+  //#define RGB_LED_R_PIN 34
+  //#define RGB_LED_G_PIN 43
+  //#define RGB_LED_B_PIN 35
+                        //#define RGB_LED_W_PIN -1
 #endif
 
 // Support for Adafruit NeoPixel LED driver
 //#define NEOPIXEL_LED
 #if ENABLED(NEOPIXEL_LED)
-#define NEOPIXEL_TYPE   NEO_GRB // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
-#define NEOPIXEL_PIN     4       // LED driving pin
-//#define NEOPIXEL2_TYPE NEOPIXEL_TYPE
-//#define NEOPIXEL2_PIN    5
-#define NEOPIXEL_PIXELS 15       // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
-#define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
-#define NEOPIXEL_BRIGHTNESS 127  // Initial brightness (0-255)
-#define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
+  #define NEOPIXEL_TYPE          NEO_GRBW // NEO_GRBW, NEO_RGBW, NEO_GRB, NEO_RBG, etc.
+                                          // See https://github.com/adafruit/Adafruit_NeoPixel/blob/master/Adafruit_NeoPixel.h
+  //#define NEOPIXEL_PIN                4 // LED driving pin
+  //#define NEOPIXEL2_TYPE  NEOPIXEL_TYPE
+  //#define NEOPIXEL2_PIN               5
+  #define NEOPIXEL_PIXELS              30 // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
+  #define NEOPIXEL_IS_SEQUENTIAL          // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
+  #define NEOPIXEL_BRIGHTNESS         127 // Initial brightness (0-255)
+  //#define NEOPIXEL_STARTUP_TEST         // Cycle through colors at startup
 
-// Support for second Adafruit NeoPixel LED driver controlled with M150 S1 ...
-//#define NEOPIXEL2_SEPARATE
-#if ENABLED(NEOPIXEL2_SEPARATE)
-#define NEOPIXEL2_PIXELS      15  // Number of LEDs in the second strip
-#define NEOPIXEL2_BRIGHTNESS 127  // Initial brightness (0-255)
-#define NEOPIXEL2_STARTUP_TEST    // Cycle through colors at startup
-#else
-  //#define NEOPIXEL2_INSERIES      // Default behavior is NeoPixel 2 in parallel
-#endif
+  // Support for second Adafruit NeoPixel LED driver controlled with M150 S1 ...
+  //#define NEOPIXEL2_SEPARATE
+  #if ENABLED(NEOPIXEL2_SEPARATE)
+    #define NEOPIXEL2_PIXELS           15 // Number of LEDs in the second strip
+    #define NEOPIXEL2_BRIGHTNESS      127 // Initial brightness (0-255)
+    #define NEOPIXEL2_STARTUP_TEST        // Cycle through colors at startup
+  #else
+    //#define NEOPIXEL2_INSERIES          // Default behavior is NeoPixel 2 in parallel
+  #endif
 
-// Use a single NeoPixel LED for static (background) lighting
-//#define NEOPIXEL_BKGD_LED_INDEX  0               // Index of the LED to use
-//#define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 0 } // R, G, B, W
+  // Use some of the NeoPixel LEDs for static (background) lighting
+  //#define NEOPIXEL_BKGD_INDEX_FIRST   0 // Index of the first background LED
+  //#define NEOPIXEL_BKGD_INDEX_LAST    5 // Index of the last background LED
+  //#define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 0 }  // R, G, B, W
+  //#define NEOPIXEL_BKGD_ALWAYS_ON       // Keep the backlight on when other NeoPixels are off
 #endif
 
 /**

@@ -75,7 +75,9 @@
     #define Z_STOP_PIN                        35
   #else
     #define Z_MIN_PIN                         35
-    #define Z_MAX_PIN                         37
+    #ifndef Z_MAX_PIN
+      #define Z_MAX_PIN                       37
+    #endif                       
   #endif
 #else
   #define Z_MIN_PIN                           11
